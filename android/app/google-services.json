@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "802456357407",
+    "project_id": "thesocial-3123d",
+    "storage_bucket": "thesocial-3123d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:802456357407:android:9db02d86a1e3e41289632a",
+        "android_client_info": {
+          "package_name": "com.holtz.socialmedia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "802456357407-1t177d7hhsic2qfbnpcd7eu8sa3t48sa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlI-EYy9zJw3NAc1wqujpdyBHAvp22RpU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "802456357407-1t177d7hhsic2qfbnpcd7eu8sa3t48sa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
