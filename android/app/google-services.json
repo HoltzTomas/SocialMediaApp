@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "802456357407-5ifq67r8h1rekbaim8n38lsk9icrdc8s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.holtz.socialmedia",
+            "certificate_hash": "8a10abe56fa401352cb1e5cc3b8a41c43599097d"
+          }
+        },
+        {
           "client_id": "802456357407-1t177d7hhsic2qfbnpcd7eu8sa3t48sa.apps.googleusercontent.com",
           "client_type": 3
         }

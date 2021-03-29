@@ -12,12 +12,15 @@ dependencies:
   flutter:
     sdk: flutter
   change_app_package_name: ^0.1.2
+  cloud_firestore: ^1.0.3
   cupertino_icons: ^1.0.2
   eva_icons_flutter: ^3.0.0
   firebase_auth: ^1.0.1
   firebase_core: ^1.0.2
+  firebase_storage: ^8.0.1
   font_awesome_flutter: ^9.0.0
   google_sign_in: ^5.0.1
+  image_picker: ^0.7.3
   page_transition: ^1.1.7+6
   provider: ^5.0.0
 

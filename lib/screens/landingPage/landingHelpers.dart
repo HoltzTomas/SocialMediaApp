@@ -1,7 +1,12 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 import 'package:social_media_app/constants/Constantcolors.dart';
+import 'package:social_media_app/screens/HomePage/homePage.dart';
+import 'package:social_media_app/screens/landingPage/landingServices.dart';
+import 'package:social_media_app/services/Authentication.dart';
 
 class LandingHelpers with ChangeNotifier {
   final ConstantColors constantColors = ConstantColors();
@@ -69,6 +74,9 @@ class LandingHelpers with ChangeNotifier {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               GestureDetector(
+                onTap: () {
+                  emailAuthSheet(context);
+                },
                 child: Container(
                   width: 80,
                   height: 40.0,
@@ -82,6 +90,17 @@ class LandingHelpers with ChangeNotifier {
                 ),
               ),
               GestureDetector(
+                onTap: () {
+                  Provider.of<Authentication>(context, listen: false)
+                      .signInWithGoogle()
+                      .whenComplete(() {
+                    Navigator.pushReplacement(
+                        context,
+                        PageTransition(
+                            child: HomePage(),
+                            type: PageTransitionType.leftToRight));
+                  });
+                },
                 child: Container(
                   width: 80,
                   height: 40.0,
@@ -132,5 +151,66 @@ class LandingHelpers with ChangeNotifier {
         ),
       ),
     );
+  }
+
+  emailAuthSheet(BuildContext context) {
+    return showModalBottomSheet(
+      isScrollControlled: true,
+        context: context,
+        builder: (context) {
+          return Container(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 150),
+                    child: Divider(
+                      thickness: 4.0,
+                      color: constantColors.whiteColor,
+                    ),
+                  ),
+                  Provider.of<LandingServices>(context, listen: false)
+                      .passwordLessSignIn(context),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      MaterialButton(
+                        color: constantColors.blueColor,
+                        child: Text("Log in",
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            )),
+                        onPressed: () {
+                          Provider.of<LandingServices>(context, listen: false)
+                              .logInSheet(context);
+                        },
+                      ),
+                      MaterialButton(
+                        color: constantColors.redColor,
+                        child: Text("Sign in",
+                            style: TextStyle(
+                              color: constantColors.whiteColor,
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            )),
+                        onPressed: () {
+                          Provider.of<LandingServices>(context, listen: false)
+                              .signInSheet(context);
+                        },
+                      )
+                    ],
+                  )
+                ],
+              ),
+              height: MediaQuery.of(context).size.height * 0.5,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                color: constantColors.blueGreyColor,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(15.0),
+                    topRight: Radius.circular(15.0)),
+              ));
+        });
   }
 }
