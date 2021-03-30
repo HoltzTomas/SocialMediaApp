@@ -168,7 +168,7 @@ class LandingServices with ChangeNotifier {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: TextField(
-                    controller: userNameController,
+                    controller: userPasswordController,
                     decoration: InputDecoration(
                       hintText: 'Enter password...',
                       hintStyle: TextStyle(
