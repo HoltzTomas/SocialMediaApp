@@ -7,6 +7,7 @@ import 'package:social_media_app/constants/Constantcolors.dart';
 import 'package:social_media_app/screens/HomePage/homePage.dart';
 import 'package:social_media_app/screens/landingPage/landingServices.dart';
 import 'package:social_media_app/services/Authentication.dart';
+import 'package:social_media_app/screens/landingPage/landingUtils.dart';
 
 class LandingHelpers with ChangeNotifier {
   final ConstantColors constantColors = ConstantColors();
@@ -195,8 +196,8 @@ class LandingHelpers with ChangeNotifier {
                               fontWeight: FontWeight.bold,
                             )),
                         onPressed: () {
-                          Provider.of<LandingServices>(context, listen: false)
-                              .signInSheet(context);
+                          Provider.of<LandingUtils>(context, listen: false)
+                              .selectAvatarOptionsSheet(context);
                         },
                       )
                     ],

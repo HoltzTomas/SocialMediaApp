@@ -6,6 +6,8 @@ import 'package:social_media_app/screens/landingPage/landingHelpers.dart';
 import 'package:social_media_app/screens/landingPage/landingServices.dart';
 import 'package:social_media_app/screens/splashscreen/splashScreen.dart';
 import 'package:social_media_app/services/Authentication.dart';
+import 'package:social_media_app/services/FirebaseOperations.dart';
+import 'package:social_media_app/screens/landingPage/landingUtils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +29,8 @@ class MyApp extends StatelessWidget {
             canvasColor: Colors.transparent),
       ),
       providers: [
+        ChangeNotifierProvider(create: (_) => LandingUtils()),
+        ChangeNotifierProvider(create: (_) => FirebaseOperations()),
         ChangeNotifierProvider(create: (_) => LandingServices()),
         ChangeNotifierProvider(create: (_) => Authentication()),
         ChangeNotifierProvider(create: (_) => LandingHelpers())
