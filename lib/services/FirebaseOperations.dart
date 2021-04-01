@@ -55,4 +55,8 @@ class FirebaseOperations with ChangeNotifier {
       notifyListeners();
     });
   }
+
+  Future uploadPostData(String postId, dynamic data) async {
+    return FirebaseFirestore.instance.collection('posts').doc(postId).set(data);
+  }
 }
