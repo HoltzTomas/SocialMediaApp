@@ -279,7 +279,7 @@ class UploadPost with ChangeNotifier {
                       'useremail': Provider.of<FirebaseOperations>(context,
                               listen: false)
                           .getInitUserEmail,
-                      'postimage': uploadPostImageUrl
+                      'postimage': getUploadPostImageUrl
                     }).whenComplete((){ Navigator.pop(context);});
                   },
                   color: constantColors.blueColor,
