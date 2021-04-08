@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:social_media_app/constants/Constantcolors.dart';
 import 'package:social_media_app/services/Authentication.dart';
 import 'package:social_media_app/utils/UploadPost.dart';
+import 'package:social_media_app/utils/PostOptions.dart';
 
 class FeedHelpers with ChangeNotifier {
   ConstantColors constantColors = ConstantColors();
@@ -157,16 +158,49 @@ class FeedHelpers with ChangeNotifier {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           GestureDetector(
+                            onLongPress: () {
+                              Provider.of<PostOptions>(context, listen: false)
+                                  .showLikes(context,
+                                      documentSnapshot.data()['caption']);
+                            },
+                            onTap: () {
+                              print("Adding like...");
+                              Provider.of<PostOptions>(context, listen: false)
+                                  .addLike(
+                                      context,
+                                      documentSnapshot.data()['caption'],
+                                      Provider.of<Authentication>(context,
+                                              listen: false)
+                                          .getUserUid);
+                            },
                             child: Icon(FontAwesomeIcons.heart,
                                 color: constantColors.redColor, size: 22.0),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: Text('0',
-                                style: TextStyle(
-                                    color: constantColors.whiteColor,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18.0)),
+                          StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('posts')
+                                .doc(documentSnapshot.data()['caption'])
+                                .collection('likes')
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else {
+                                return Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(
+                                    snapshot.data.docs.length.toString(),
+                                    style: TextStyle(
+                                        color: constantColors.whiteColor,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18.0),
+                                  ),
+                                );
+                              }
+                            },
                           )
                         ],
                       ),
@@ -177,16 +211,39 @@ class FeedHelpers with ChangeNotifier {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           GestureDetector(
+                            onTap: () {
+                              Provider.of<PostOptions>(context, listen: false)
+                                  .showCommentsSheet(context, documentSnapshot,
+                                      documentSnapshot.data()['caption']);
+                            },
                             child: Icon(FontAwesomeIcons.comment,
                                 color: constantColors.blueColor, size: 22.0),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: Text('0',
-                                style: TextStyle(
-                                    color: constantColors.whiteColor,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18.0)),
+                          StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('posts')
+                                .doc(documentSnapshot.data()['caption'])
+                                .collection('comments')
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else {
+                                return Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(
+                                    snapshot.data.docs.length.toString(),
+                                    style: TextStyle(
+                                        color: constantColors.whiteColor,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18.0),
+                                  ),
+                                );
+                              }
+                            },
                           )
                         ],
                       ),
@@ -197,16 +254,38 @@ class FeedHelpers with ChangeNotifier {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           GestureDetector(
+                            onTap: () {
+                              Provider.of<PostOptions>(context, listen: false)
+                                  .showRewards(context, documentSnapshot.data()['caption']);
+                            },
                             child: Icon(FontAwesomeIcons.award,
                                 color: constantColors.yellowColor, size: 22.0),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: Text('0',
-                                style: TextStyle(
-                                    color: constantColors.whiteColor,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18.0)),
+                          StreamBuilder<QuerySnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('posts')
+                                .doc(documentSnapshot.data()['caption'])
+                                .collection('awards')
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else {
+                                return Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(
+                                    snapshot.data.docs.length.toString(),
+                                    style: TextStyle(
+                                        color: constantColors.whiteColor,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18.0),
+                                  ),
+                                );
+                              }
+                            },
                           )
                         ],
                       ),

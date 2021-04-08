@@ -11,6 +11,7 @@ import 'package:social_media_app/services/FirebaseOperations.dart';
 import 'package:social_media_app/screens/landingPage/landingUtils.dart';
 import 'package:social_media_app/screens/HomePage/homePageHelpers.dart';
 import 'package:social_media_app/screens/Profile/profileHelpers.dart';
+import 'package:social_media_app/utils/PostOptions.dart';
 import 'package:social_media_app/utils/UploadPost.dart';
 
 
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
             canvasColor: Colors.transparent),
       ),
       providers: [
+        ChangeNotifierProvider(create: (_) => PostOptions()),
         ChangeNotifierProvider(create: (_) => UploadPost()),
         ChangeNotifierProvider(create: (_) => FeedHelpers()),
         ChangeNotifierProvider(create: (_) => ProfileHelpers()),
