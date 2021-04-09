@@ -1,14 +1,191 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/constants/Constantcolors.dart';
+import 'package:social_media_app/screens/AltProfile/alt_profile.dart';
 import 'package:social_media_app/services/Authentication.dart';
 import 'package:social_media_app/services/FirebaseOperations.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class PostOptions with ChangeNotifier {
   ConstantColors constantColors = ConstantColors();
   TextEditingController commentController = TextEditingController();
+  TextEditingController editCaptionController = TextEditingController();
+  String imageTimePosted;
+  String get getImageTimePosted => imageTimePosted;
+
+  showTimeAgo(dynamic timedata) {
+    Timestamp time = timedata;
+    DateTime dateTime = time.toDate();
+    imageTimePosted = timeago.format(dateTime);
+    print(imageTimePosted);
+    notifyListeners();
+  }
+
+  showPostOptions(BuildContext context, String postId) {
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Container(
+              child: Column(
+                children: [
+                  Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 150),
+                      child: Divider(
+                        thickness: 4.0,
+                        color: constantColors.whiteColor,
+                      )),
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        MaterialButton(
+                          color: constantColors.lightBlueColor,
+                          child: Text(
+                            'Edit Caption',
+                            style: TextStyle(
+                                color: constantColors.whiteColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16.0),
+                          ),
+                          onPressed: () {
+                            return showModalBottomSheet(
+                                context: context,
+                                builder: (context) {
+                                  return Container(
+                                    child: Center(
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 300.0,
+                                            height: 50.0,
+                                            child: TextField(
+                                              decoration: InputDecoration(
+                                                hintText: "Add new caption",
+                                                hintStyle: TextStyle(
+                                                    color: constantColors
+                                                        .whiteColor,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16.0),
+                                              ),
+                                              style: TextStyle(
+                                                  color:
+                                                      constantColors.whiteColor,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16.0),
+                                              controller: editCaptionController,
+                                            ),
+                                          ),
+                                          FloatingActionButton(
+                                              backgroundColor:
+                                                  constantColors.redColor,
+                                              child: Icon(
+                                                  FontAwesomeIcons.fileUpload,
+                                                  color: constantColors
+                                                      .whiteColor),
+                                              onPressed: () {
+                                                Provider.of<FirebaseOperations>(
+                                                        context,
+                                                        listen: false)
+                                                    .updateCaption(postId, {
+                                                  'caption':
+                                                      editCaptionController.text
+                                                });
+                                              })
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                });
+                          },
+                        ),
+                        MaterialButton(
+                          color: constantColors.redColor,
+                          child: Text(
+                            'Delete Post',
+                            style: TextStyle(
+                                color: constantColors.whiteColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16.0),
+                          ),
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    backgroundColor: constantColors.darkColor,
+                                    title: Text(
+                                      "Delet this post?",
+                                      style: TextStyle(
+                                          color: constantColors.whiteColor,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16.0),
+                                    ),
+                                    actions: [
+                                      MaterialButton(
+                                        child: Text(
+                                          'No',
+                                          style: TextStyle(
+                                              decoration:
+                                                  TextDecoration.underline,
+                                              decorationColor:
+                                                  constantColors.whiteColor,
+                                              color: constantColors.whiteColor,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16.0),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      MaterialButton(
+                                        child: Text(
+                                          'Yes',
+                                          style: TextStyle(
+                                              decoration:
+                                                  TextDecoration.underline,
+                                              decorationColor:
+                                                  constantColors.whiteColor,
+                                              color: constantColors.whiteColor,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16.0),
+                                        ),
+                                        onPressed: () {
+                                          Provider.of<FirebaseOperations>(
+                                                  context,
+                                                  listen: false)
+                                              .deleteUserData(postId, 'posts')
+                                              .whenComplete(() {
+                                            Navigator.pop(context);
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                });
+                          },
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              height: MediaQuery.of(context).size.height * 0.1,
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                  color: constantColors.blueGreyColor,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12.0),
+                      topRight: Radius.circular(12.0))),
+            ),
+          );
+        });
+  }
 
   Future addLike(BuildContext context, String postId, String subDocId) async {
     return FirebaseFirestore.instance
@@ -47,6 +224,122 @@ class PostOptions with ChangeNotifier {
           .getInitUserEmail,
       'time': Timestamp.now()
     });
+  }
+
+  showAwardsPresenter(BuildContext context, String postId) {
+    return showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: (context) {
+          return Container(
+              height: MediaQuery.of(context).size.height * 0.5,
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 150),
+                    child: Divider(
+                      thickness: 4.0,
+                      color: constantColors.whiteColor,
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(color: constantColors.whiteColor),
+                        borderRadius: BorderRadius.circular(5.0)),
+                    child: Center(
+                      child: Text(
+                        "Awards",
+                        style: TextStyle(
+                            color: constantColors.blueColor,
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  Container(
+                      height: MediaQuery.of(context).size.height * 0.4,
+                      width: MediaQuery.of(context).size.width,
+                      child: StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance
+                              .collection('posts')
+                              .doc(postId)
+                              .collection('awards')
+                              .orderBy('time')
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else {
+                              return new ListView(
+                                children: snapshot.data.docs
+                                    .map((DocumentSnapshot documentSnapshot) {
+                                  return ListTile(
+                                    leading: GestureDetector(
+                                      onTap: () {
+                                        Navigator.pushReplacement(
+                                            context,
+                                            PageTransition(
+                                                child: AltProfile(
+                                                    userUid: documentSnapshot
+                                                        .data()['useruid']),
+                                                type: PageTransitionType
+                                                    .bottomToTop));
+                                      },
+                                      child: CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                            documentSnapshot
+                                                .data()['userImage']),
+                                        radius: 15.0,
+                                        backgroundColor:
+                                            constantColors.darkColor,
+                                      ),
+                                    ),
+                                    trailing: Provider.of<Authentication>(
+                                                    context,
+                                                    listen: false)
+                                                .getUserUid ==
+                                            documentSnapshot.data()['useruid']
+                                        ? Container(
+                                            height: 0.0,
+                                            width: 0.0,
+                                          )
+                                        : MaterialButton(
+                                            child: Text(
+                                              "Follow",
+                                              style: TextStyle(
+                                                  color:
+                                                      constantColors.whiteColor,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14.0),
+                                            ),
+                                            onPressed: () {},
+                                            color: constantColors.blueColor,
+                                          ),
+                                    title: Text(
+                                      documentSnapshot.data()['username'],
+                                      style: TextStyle(
+                                          color: constantColors.whiteColor,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16.0),
+                                    ),
+                                  );
+                                }).toList(),
+                              );
+                            }
+                          }))
+                ],
+              ),
+              decoration: BoxDecoration(
+                color: constantColors.blueGreyColor,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(12.0),
+                    topRight: Radius.circular(12.0)),
+              ));
+        });
   }
 
   showCommentsSheet(
@@ -117,6 +410,18 @@ class PostOptions with ChangeNotifier {
                                           padding: const EdgeInsets.only(
                                               top: 8.0, left: 8.0),
                                           child: GestureDetector(
+                                            onTap: () {
+                                              Navigator.pushReplacement(
+                                                  context,
+                                                  PageTransition(
+                                                      child: AltProfile(
+                                                          userUid:
+                                                              documentSnapshot
+                                                                      .data()[
+                                                                  'useruid']),
+                                                      type: PageTransitionType
+                                                          .bottomToTop));
+                                            },
                                             child: CircleAvatar(
                                               backgroundColor:
                                                   constantColors.darkColor,
@@ -317,6 +622,16 @@ class PostOptions with ChangeNotifier {
                               .map((DocumentSnapshot documentSnapshot) {
                             return ListTile(
                               leading: GestureDetector(
+                                onTap: () {
+                                  Navigator.pushReplacement(
+                                      context,
+                                      PageTransition(
+                                          child: AltProfile(
+                                              userUid: documentSnapshot
+                                                  .data()['useruid']),
+                                          type:
+                                              PageTransitionType.bottomToTop));
+                                },
                                 child: CircleAvatar(
                                   backgroundImage: NetworkImage(
                                       documentSnapshot.data()['userImage']),

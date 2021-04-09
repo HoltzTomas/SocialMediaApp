@@ -130,7 +130,7 @@ class LandingServices with ChangeNotifier {
                           onPressed: () {
                             Provider.of<FirebaseOperations>(context,
                                     listen: false)
-                                .deleteUserData(documentSnapshot.data()['useruid']);
+                                .deleteUserData(documentSnapshot.data()['useruid'],'users');
                           },
                         ),
                       ],

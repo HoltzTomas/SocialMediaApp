@@ -3,8 +3,10 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_app/constants/Constantcolors.dart';
+import 'package:social_media_app/screens/AltProfile/alt_profile.dart';
 import 'package:social_media_app/services/Authentication.dart';
 import 'package:social_media_app/utils/UploadPost.dart';
 import 'package:social_media_app/utils/PostOptions.dart';
@@ -50,7 +52,10 @@ class FeedHelpers with ChangeNotifier {
       padding: const EdgeInsets.only(top: 8.0),
       child: Container(
         child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection('posts').snapshots(),
+          stream: FirebaseFirestore.instance
+              .collection('posts')
+              .orderBy('time', descending: true)
+              .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(
@@ -79,6 +84,8 @@ class FeedHelpers with ChangeNotifier {
       BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
     return ListView(
       children: snapshot.data.docs.map((DocumentSnapshot documentSnapshot) {
+        Provider.of<PostOptions>(context, listen: false)
+            .showTimeAgo(documentSnapshot.data()['time']);
         return Container(
           height: MediaQuery.of(context).size.height * 0.62,
           width: MediaQuery.of(context).size.width,
@@ -91,6 +98,19 @@ class FeedHelpers with ChangeNotifier {
                 child: Row(
                   children: [
                     GestureDetector(
+                      onTap: () {
+                        if (documentSnapshot.data()['useruid'] !=
+                            Provider.of<Authentication>(context, listen: false)
+                                .getUserUid) {
+                          Navigator.pushReplacement(
+                              context,
+                              PageTransition(
+                                  child: AltProfile(
+                                      userUid:
+                                          documentSnapshot.data()['useruid']),
+                                  type: PageTransitionType.bottomToTop));
+                        }
+                      },
                       child: CircleAvatar(
                         backgroundColor: constantColors.blueGreyColor,
                         radius: 20.0,
@@ -123,7 +143,8 @@ class FeedHelpers with ChangeNotifier {
                                       fontWeight: FontWeight.bold),
                                   children: <TextSpan>[
                                     TextSpan(
-                                        text: ' , 12 hours ago',
+                                        text:
+                                            ' , ${Provider.of<PostOptions>(context, listen: false).getImageTimePosted.toString()}',
                                         style: TextStyle(
                                             color: constantColors.lightColor
                                                 .withOpacity(0.8)))
@@ -131,6 +152,35 @@ class FeedHelpers with ChangeNotifier {
                             ))
                           ],
                         ),
+                      ),
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * .2,
+                      height: MediaQuery.of(context).size.height * 0.05,
+                      child: StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('posts')
+                            .doc(documentSnapshot.data()['caption'])
+                            .collection('awards')
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          } else {
+                            return new ListView(
+                              scrollDirection: Axis.horizontal,
+                              children: snapshot.data.docs
+                                  .map((DocumentSnapshot documentSnapshot) {
+                                return Container(
+                                    height: 30.0,
+                                    width: 30.0,
+                                    child: Image.network(
+                                        documentSnapshot.data()['award']));
+                              }).toList(),
+                            );
+                          }
+                        },
                       ),
                     )
                   ],
@@ -254,9 +304,15 @@ class FeedHelpers with ChangeNotifier {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           GestureDetector(
+                            onLongPress: () {
+                              Provider.of<PostOptions>(context, listen: false)
+                                  .showAwardsPresenter(context,
+                                      documentSnapshot.data()['caption']);
+                            },
                             onTap: () {
                               Provider.of<PostOptions>(context, listen: false)
-                                  .showRewards(context, documentSnapshot.data()['caption']);
+                                  .showRewards(context,
+                                      documentSnapshot.data()['caption']);
                             },
                             child: Icon(FontAwesomeIcons.award,
                                 color: constantColors.yellowColor, size: 22.0),
@@ -299,7 +355,11 @@ class FeedHelpers with ChangeNotifier {
                               EvaIcons.moreVertical,
                               color: constantColors.whiteColor,
                             ),
-                            onPressed: () {})
+                            onPressed: () {
+                              Provider.of<PostOptions>(context, listen: false)
+                                  .showPostOptions(context,
+                                      documentSnapshot.data()['caption']);
+                            })
                         : Container(height: 0.0, width: 0.0)
                   ],
                 ),
